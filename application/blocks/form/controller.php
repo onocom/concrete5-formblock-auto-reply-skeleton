@@ -578,14 +578,14 @@ class Controller extends BlockController
                 @$mh->sendMail();
                 
                 // ---------------------------------------------------------------
-                // ©“®•ÔMˆ— Auto Reply
+                // è‡ªå‹•è¿”ä¿¡å‡¦ç† Auto Reply
                 // ---------------------------------------------------------------
-                // --------- •ÒW‚ª•K—v‚È‚Ì‚ÍƒRƒR‚©‚ç
-                $myFromName     = "R“c ‘¾˜Y";                        // ‘—MÒ–¼
-                $myFromAddress  = "myaddress@example.com";            // ‘—MÒƒ[ƒ‹ƒAƒhƒŒƒX
-                $myMailTitle    = "‚¨–â‚¢‡‚í‚¹‚ ‚è‚ª‚Æ‚¤‚²‚´‚¢‚Ü‚·"; // ƒ[ƒ‹‚ÌŒ–¼
-                $myMailTemplate = "block_form_auto_reply";            // ƒ[ƒ‹‚Ìƒeƒ“ƒvƒŒ[ƒg–¼
-                // --------- •ÒW‚ª•K—v‚È‚Ì‚ÍƒRƒR‚Ü‚Å
+                // --------- ç·¨é›†ãŒå¿…è¦ãªã®ã¯ã‚³ã‚³ã‹ã‚‰
+                $myFromName     = "å±±ç”° å¤ªéƒ";                        // é€ä¿¡è€…å
+                $myFromAddress  = "myaddress@example.com";            // é€ä¿¡è€…ãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹
+                $myMailTitle    = "ãŠå•ã„åˆã‚ã›ã‚ã‚ŠãŒã¨ã†ã”ã–ã„ã¾ã™"; // ãƒ¡ãƒ¼ãƒ«ã®ä»¶å
+                $myMailTemplate = "block_form_auto_reply";            // ãƒ¡ãƒ¼ãƒ«ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå
+                // --------- ç·¨é›†ãŒå¿…è¦ãªã®ã¯ã‚³ã‚³ã¾ã§
                 
                 $mh = Core::make('helper/mail');
                 $mh->to($replyToEmailAddress);
@@ -595,7 +595,7 @@ class Controller extends BlockController
                 $mh->setSubject(t($myMailTitle));
                 @$mh->sendMail();
                 // ---------------------------------------------------------------
-                // / ©“®•ÔMˆ— Auto Reply 
+                // / è‡ªå‹•è¿”ä¿¡å‡¦ç† Auto Reply 
                 // ---------------------------------------------------------------
             }
 
