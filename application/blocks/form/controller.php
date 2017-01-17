@@ -583,10 +583,10 @@ class Controller extends BlockController
                 
                 $mh = Core::make('helper/mail');
                 $mh->to($replyToEmailAddress);
-                $mh->from($myFromAddress);
+                $mh->from($myFromAddress,$myFromName);
                 $mh->addParameter('questionAnswerPairs', $questionAnswerPairs);
                 $mh->load($myMailTemplate);
-                $mh->setSubject(t($myMailTitle));
+                $mh->setSubject($myMailTitle);
                 @$mh->sendMail();
                 // ---------------------------------------------------------------
                 // / 自動返信処理 Auto Reply 
