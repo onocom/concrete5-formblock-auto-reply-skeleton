@@ -30,6 +30,7 @@ class Controller extends BlockController
     protected $btExportTables = array('btForm', 'btFormQuestions');
     protected $btExportPageColumns = array('redirectCID');
     protected $lastAnswerSetId = 0;
+    protected $btCopyWhenPropagate = true;
 
     /**
      * Used for localization. If we want to localize the name/description we have to include this.
@@ -355,6 +356,11 @@ class Controller extends BlockController
         //get all questions for this question set
         $rows = $db->GetArray("SELECT * FROM {$this->btQuestionsTablename} WHERE questionSetId=? AND bID=? order by position asc, msqID", array($qsID, intval($this->bID)));
 
+
+        if (!count($rows)) {
+            throw new Exception(t("Oops, something is wrong with the form you posted (it doesn't have any questions)."));
+        }
+
         $errorDetails = array();
 
         // check captcha if activated
@@ -572,36 +578,45 @@ class Controller extends BlockController
                 @$mh->sendMail();
                 
                 // ---------------------------------------------------------------
-                // è‡ªå‹•è¿”ä¿¡å‡¦ç† Auto Reply
+                // ©“®•ÔMˆ— Auto Reply
                 // ---------------------------------------------------------------
-                // --------- ç·¨é›†ãŒå¿…è¦ãªã®ã¯ã‚³ã‚³ã‹ã‚‰
-                $myFromName     = "å±±ç”° å¤ªéƒ";                        // é€ä¿¡è€…å
-                $myFromAddress  = "myaddress@example.com";            // é€ä¿¡è€…ãƒ¡ãƒ¼ãƒ«ã‚¢ãƒ‰ãƒ¬ã‚¹
-                $myMailTitle    = "ãŠå•ã„åˆã‚ã›ã‚ã‚ŠãŒã¨ã†ã”ã–ã„ã¾ã™"; // ãƒ¡ãƒ¼ãƒ«ã®ä»¶å
-                $myMailTemplate = "block_form_auto_reply";            // ãƒ¡ãƒ¼ãƒ«ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå
-                // --------- ç·¨é›†ãŒå¿…è¦ãªã®ã¯ã‚³ã‚³ã¾ã§
+                // --------- •ÒW‚ª•K—v‚È‚Ì‚ÍƒRƒR‚©‚ç
+                $myFromName     = "R“c ‘¾˜Y";                        // ‘—MÒ–¼
+                $myFromAddress  = "myaddress@example.com";            // ‘—MÒƒ[ƒ‹ƒAƒhƒŒƒX
+                $myMailTitle    = "‚¨–â‚¢‡‚í‚¹‚ ‚è‚ª‚Æ‚¤‚²‚´‚¢‚Ü‚·"; // ƒ[ƒ‹‚ÌŒ–¼
+                $myMailTemplate = "block_form_auto_reply";            // ƒ[ƒ‹‚Ìƒeƒ“ƒvƒŒ[ƒg–¼
+                // --------- •ÒW‚ª•K—v‚È‚Ì‚ÍƒRƒR‚Ü‚Å
                 
                 $mh = Core::make('helper/mail');
                 $mh->to($replyToEmailAddress);
-                $mh->from($myFromAddress,$myFromName);
+                $mh->from($myFromAddress);
                 $mh->addParameter('questionAnswerPairs', $questionAnswerPairs);
                 $mh->load($myMailTemplate);
-                $mh->setSubject($myMailTitle);
+                $mh->setSubject(t($myMailTitle));
                 @$mh->sendMail();
                 // ---------------------------------------------------------------
-                // / è‡ªå‹•è¿”ä¿¡å‡¦ç† Auto Reply 
+                // / ©“®•ÔMˆ— Auto Reply 
                 // ---------------------------------------------------------------
             }
 
             if (!$this->noSubmitFormRedirect) {
-                if ($this->redirectCID > 0) {
+                $targetPage = null;
+                if ($this->redirectCID == HOME_CID) {
+                    $targetPage = Page::getByID(HOME_CID);
+                } elseif ($this->redirectCID > 0) {
                     $pg = Page::getByID($this->redirectCID);
                     if (is_object($pg) && $pg->cID) {
-                        $this->redirect($pg->getCollectionPath());
+                        $targetPage = $pg;
                     }
                 }
-                $c = Page::getCurrentPage();
-                header("Location: ".Core::make('helper/navigation')->getLinkToCollection($c, true)."?surveySuccess=1&qsid=".$this->questionSetId."#formblock".$this->bID);
+                if (is_object($targetPage)) {
+                    $response = \Redirect::page($targetPage);
+                } else {
+                    $response = \Redirect::page(Page::getCurrentPage());
+                    $url = $response->getTargetUrl() . "?surveySuccess=1&qsid=".$this->questionSetId."#formblock".$this->bID;
+                    $response->setTargetUrl($url);
+                }
+                $response->send();
                 exit;
             }
         }
